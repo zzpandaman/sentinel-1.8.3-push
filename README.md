@@ -10,9 +10,14 @@
   - 参考FlowControllerV2修改FlowControllerV1
     - 为什么选择改V1:簇点链路页面、流控规则页面中添加规则默认使用V1，这样不用改前端调用就能全部走新的规则。
     - 修改点就是添加flowRuleNacosProvider、flowRuleNacosPublisher，并在相应位置使用它们。
-- 修改其他规则
-  - 添加相应规则的DynamicRulePublisher 和 DynamicRuleProvider接口实现。<br>
-  [官方文档](https://github.com/alibaba/Sentinel/wiki/%E5%9C%A8%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E4%BD%BF%E7%94%A8-Sentinel)对两个接口的说明是:
+  - 修改其他规则
+    - 添加相应规则的DynamicRulePublisher 和 DynamicRuleProvider接口实现。<br>
+    [官方文档](https://github.com/alibaba/Sentinel/wiki/%E5%9C%A8%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%AD%E4%BD%BF%E7%94%A8-Sentinel)对两个接口的说明是:
     > 从 Sentinel 1.4.0 开始，我们抽取出了接口用于向远程配置中心推送规则以及拉取规则：
-    > - DynamicRuleProvider<T>: 拉取规则
-    > - DynamicRulePublisher<T>: 推送规则
+    >  - DynamicRuleProvider<T>: 拉取规则
+    >  - DynamicRulePublisher<T>: 推送规则
+    - 修改Controller:`AuthorityRuleController` `DegradeController` `GatewayApiController`<br>
+    `GatewayFlowRuleController` `ParamFlowRuleController` `SystemController`
+      - 注入相应的接口实现类`ruleProvider` `rulePublisher`
+      - 修改Controller中`publishRules`或`publishApis`方法使用上一步中注入的`rulePublisher`，每个Controller对该方法有三处调用，需做相应修改。
+      - 修改Controller中`publishRules`方法使用上一步中注入的`ruleProvider`。
